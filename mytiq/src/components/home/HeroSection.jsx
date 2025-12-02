@@ -1,17 +1,20 @@
 import React from 'react';
 import { Music, Palette, Trophy, ArrowRight, Flame } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-6 py-20 relative overflow-hidden">
-     
+      {/* Decorative circles */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
       <div className="absolute bottom-10 right-20 w-96 h-96 bg-blue-200 rounded-full opacity-20 blur-3xl"></div>
       
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
-          
+          {/* Left Side - Content */}
           <div>
             <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-6">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -30,16 +33,19 @@ const HeroSection = () => {
               Découvrez, achetez et gérez vos billets facilement.
             </p>
             
-            <button className="group inline-flex items-center gap-3 px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <button 
+              onClick={() => navigate('/events')}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
               <span>Découvrir les événements</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
             </button>
           </div>
 
-         
+          {/* Right Side - Events Card */}
           <div className="relative">
             <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
-            
+              {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900">Événements populaires</h3>
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
@@ -50,7 +56,10 @@ const HeroSection = () => {
               {/* Event Items */}
               <div className="space-y-4">
                 {/* Event 1 */}
-                <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl hover:shadow-md transition cursor-pointer group">
+                <div 
+                  onClick={() => navigate('/event/3')}
+                  className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl hover:shadow-md transition cursor-pointer group"
+                >
                   <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition">
                     <Music className="w-8 h-8 text-white" />
                   </div>
@@ -59,13 +68,16 @@ const HeroSection = () => {
                     <p className="text-sm text-gray-600">15 Mars 2024 • Paris</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-purple-600">490 dh</div>
+                    <div className="text-2xl font-bold text-purple-600">49€</div>
                     <div className="text-xs text-gray-500">150 places</div>
                   </div>
                 </div>
 
-                
-                <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl hover:shadow-md transition cursor-pointer group">
+                {/* Event 2 */}
+                <div 
+                  onClick={() => navigate('/event/2')}
+                  className="flex items-center gap-4 p-4 bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl hover:shadow-md transition cursor-pointer group"
+                >
                   <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-700 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition">
                     <Palette className="w-8 h-8 text-white" />
                   </div>
@@ -74,13 +86,16 @@ const HeroSection = () => {
                     <p className="text-sm text-gray-600">22 Mars 2024 • Lyon</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-pink-600">250 dh</div>
+                    <div className="text-2xl font-bold text-pink-600">25€</div>
                     <div className="text-xs text-gray-500">80 places</div>
                   </div>
                 </div>
 
                 {/* Event 3 */}
-                <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl hover:shadow-md transition cursor-pointer group">
+                <div 
+                  onClick={() => navigate('/event/4')}
+                  className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl hover:shadow-md transition cursor-pointer group"
+                >
                   <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition">
                     <Trophy className="w-8 h-8 text-white" />
                   </div>
@@ -89,14 +104,17 @@ const HeroSection = () => {
                     <p className="text-sm text-gray-600">30 Mars 2024 • Marseille</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">350 dh</div>
+                    <div className="text-2xl font-bold text-green-600">35€</div>
                     <div className="text-xs text-gray-500">200 places</div>
                   </div>
                 </div>
               </div>
 
               {/* View All Button */}
-              <button className="w-full mt-6 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-2 group">
+              <button 
+                onClick={() => navigate('/events')}
+                className="w-full mt-6 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition flex items-center justify-center gap-2 group"
+              >
                 <span>Voir tous les événements</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
               </button>

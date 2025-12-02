@@ -1,14 +1,14 @@
 import React from 'react';
 import { useApp } from '../../contexts/AppContext';
 import EventCard from './EventCard';
-
+import { useNavigate } from 'react-router-dom';
 const EventsSection = () => {
   const { events, selectedCategory, setSelectedCategory } = useApp();
   
   const filteredEvents = selectedCategory === 'Tous' 
     ? events 
     : events.filter(e => e.category === selectedCategory);
-
+      const navigate = useNavigate();
   return (
     <div className="py-16 px-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
@@ -44,7 +44,7 @@ const EventsSection = () => {
         </div>
 
         <div className="text-center">
-          <button className="px-8 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">
+          <button onClick={() => navigate('/events')}  className="px-8 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">
             Voir tous les événements
           </button>
         </div>

@@ -1,28 +1,69 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Calendar, MapPin, Clock, Users, Share2, Heart, ChevronDown, ChevronUp, Minus, Plus, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, Clock, Users, Share2, Heart, ChevronDown, ChevronUp, Minus, Plus, Facebook, Twitter, Instagram, Linkedin, AlertCircle } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import EventCard from '../components/home/EventCard';
 
 const EventDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { events } = useApp();
+  const { isAuthenticated } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState('standard');
   
   // Trouver l'événement par ID
-  const event = events.find(e => e.id === parseInt(id)) || events[0];
+  const event = events.find(e => e.id === parseInt(id));
   
-  // Événements similaires (3 autres événements)
-  const similarEvents = events.filter(e => e.id !== event.id).slice(0, 3);
+  // Si l'événement n'existe pas, rediriger
+  useEffect(() => {
+    if (!event) {
+      navigate('/events');
+    }
+  }, [event, navigate]);
 
-  // Types de billets
+  if (!event) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Événement introuvable</h2>
+          <p className="text-gray-600 mb-6">Cet événement n'existe pas ou a été supprimé.</p>
+          <button 
+            onClick={() => navigate('/events')}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            Retour aux événements
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Événements similaires (même catégorie, sauf l'actuel)
+  const similarEvents = events
+    .filter(e => e.id !== event.id && e.category === event.category)
+    .slice(0, 3);
+
+  // Types de billets avec prix basé sur l'événement
+  const basePrice = parseInt(event.price) || 45;
   const ticketTypes = [
-    { id: 'standard', name: 'Standard', price: 45, features: ['Accès général', 'Programme inclus'] },
-    { id: 'vip', name: 'VIP Premium', price: 99, features: ['Accès backstage', 'Meet & Greet', 'Parking VIP', 'Cocktail offert'] },
+    { 
+      id: 'standard', 
+      name: 'Standard', 
+      price: basePrice, 
+      features: ['Accès général', 'Programme inclus'] 
+    },
+    { 
+      id: 'vip', 
+      name: 'VIP Premium', 
+      price: Math.round(basePrice * 2.2), 
+      features: ['Accès backstage', 'Meet & Greet', 'Parking VIP', 'Cocktail offert'] 
+    },
   ];
 
   const selectedTicketInfo = ticketTypes.find(t => t.id === selectedTicket);
@@ -31,12 +72,22 @@ const EventDetailPage = () => {
   const incrementQuantity = () => setQuantity(prev => Math.min(prev + 1, 10));
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
+  // Mapping des couleurs
+  const colorMap = {
+    purple: 'from-purple-600 to-pink-600',
+    pink: 'from-pink-600 to-rose-600',
+    orange: 'from-orange-600 to-red-600',
+    blue: 'from-blue-600 to-indigo-600',
+  };
+
+  const gradientColor = colorMap[event.color] || 'from-purple-600 to-pink-600';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       {/* Hero Banner */}
-      <div className="relative h-64 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
+      <div className={`relative h-64 bg-gradient-to-r ${gradientColor} overflow-hidden`}>
         <img 
           src={event.image} 
           alt={event.title}
@@ -48,12 +99,12 @@ const EventDetailPage = () => {
             <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
               {event.category}
             </span>
-            <span className="text-white text-sm">La Nouvelle</span>
+            <span className="text-white text-sm">Casablanca, Maroc</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
-            Festival de Jazz Paris 2024
+            {event.title}
           </h1>
-          <p className="text-white/90 text-lg">15 Mai 2024 - 22:00 PM - 03:00 AM</p>
+          <p className="text-white/90 text-lg">{event.date} - 20:00 PM - 23:00 PM</p>
         </div>
       </div>
 
@@ -75,13 +126,13 @@ const EventDetailPage = () => {
               
               <div className={`text-gray-600 leading-relaxed ${!showFullDescription ? 'line-clamp-4' : ''}`}>
                 <p className="mb-4">
-                  Le Festival de Jazz Paris 2024 revient pour une édition exceptionnelle ! Plongez dans l'univers du jazz avec des artistes internationaux renommés. Une soirée inoubliable vous attend dans un cadre intimiste et chaleureux.
+                  {event.title} revient pour une édition exceptionnelle ! Plongez dans l'univers du {event.category.toLowerCase()} avec des artistes internationaux renommés. Une soirée inoubliable vous attend dans un cadre intimiste et chaleureux.
                 </p>
                 <p className="mb-4">
-                  Au programme : concerts live, jam sessions improvisées, et rencontres avec les musiciens. Que vous soyez amateur de jazz traditionnel ou de fusion moderne, cette soirée saura vous séduire.
+                  Au programme : performances live, rencontres avec les artistes, et une ambiance unique. Que vous soyez amateur ou passionné, cette soirée saura vous séduire.
                 </p>
                 <p>
-                  Le lieu dispose d'un bar complet avec cocktails signature, ainsi que d'une restauration sur place. L'acoustique exceptionnelle de la salle garantit une expérience sonore optimale.
+                  Le lieu dispose d'un bar complet avec cocktails signature, ainsi que d'une restauration sur place. L'acoustique exceptionnelle de la salle garantit une expérience optimale.
                 </p>
               </div>
               
@@ -107,7 +158,7 @@ const EventDetailPage = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Date et heure</div>
-                    <div className="text-gray-600 text-sm">15 Mai 2024, 22:00 - 03:00</div>
+                    <div className="text-gray-600 text-sm">{event.date}, 20:00 - 23:00</div>
                   </div>
                 </div>
                 
@@ -117,7 +168,7 @@ const EventDetailPage = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Lieu</div>
-                    <div className="text-gray-600 text-sm">La Nouvelle, Paris 75011</div>
+                    <div className="text-gray-600 text-sm">Casablanca, Maroc</div>
                   </div>
                 </div>
 
@@ -152,19 +203,15 @@ const EventDetailPage = () => {
               <div className="flex gap-3">
                 <button className="flex-1 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2">
                   <Facebook className="w-5 h-5" />
-                  <span className="font-semibold">Facebook</span>
+                  <span className="font-semibold hidden sm:inline">Facebook</span>
                 </button>
                 <button className="flex-1 py-3 bg-sky-500 text-white rounded-xl hover:bg-sky-600 transition flex items-center justify-center gap-2">
                   <Twitter className="w-5 h-5" />
-                  <span className="font-semibold">Twitter</span>
+                  <span className="font-semibold hidden sm:inline">Twitter</span>
                 </button>
                 <button className="flex-1 py-3 bg-pink-600 text-white rounded-xl hover:bg-pink-700 transition flex items-center justify-center gap-2">
                   <Instagram className="w-5 h-5" />
-                  <span className="font-semibold">Instagram</span>
-                </button>
-                <button className="flex-1 py-3 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
-                  <Linkedin className="w-5 h-5" />
-                  <span className="font-semibold">LinkedIn</span>
+                  <span className="font-semibold hidden sm:inline">Instagram</span>
                 </button>
               </div>
             </div>
@@ -202,7 +249,7 @@ const EventDetailPage = () => {
                             </span>
                           )}
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">${ticket.price}</div>
+                        <div className="text-2xl font-bold text-gray-900">{ticket.price} MAD</div>
                       </div>
                       <ul className="text-xs text-gray-600 space-y-1">
                         {ticket.features.map((feature, idx) => (
@@ -213,7 +260,7 @@ const EventDetailPage = () => {
                   ))}
                 </div>
 
-           
+                {/* Quantity Selector */}
                 <div className="mb-6">
                   <label className="block text-sm font-semibold text-gray-900 mb-2">
                     Quantity
@@ -240,24 +287,40 @@ const EventDetailPage = () => {
                   </div>
                 </div>
 
-              
+                {/* Price Summary */}
                 <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
                   <div className="flex justify-between text-gray-600">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${selectedTicketInfo.price * quantity}</span>
+                    <span className="font-semibold">{selectedTicketInfo.price * quantity} MAD</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Service Fee</span>
-                    <span className="font-semibold">$5</span>
+                    <span className="font-semibold">5 MAD</span>
                   </div>
                   <div className="flex justify-between text-xl font-bold text-gray-900">
                     <span>Total</span>
-                    <span className="text-purple-600">${total + 5}</span>
+                    <span className="text-purple-600">{total + 5} MAD</span>
                   </div>
                 </div>
 
-              
-                <button className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition shadow-lg hover:shadow-xl mb-4">
+                {/* Checkout Button */}
+                <button 
+                  onClick={() => {
+                    if (!isAuthenticated()) {
+                      navigate('/login', { state: { from: `/event/${event.id}` } });
+                    } else {
+                      navigate('/checkout', {
+                        state: {
+                          event,
+                          ticketType: selectedTicketInfo,
+                          quantity,
+                          total: total + 5
+                        }
+                      });
+                    }
+                  }}
+                  className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition shadow-lg hover:shadow-xl mb-4"
+                >
                   Checkout
                 </button>
 
@@ -266,15 +329,15 @@ const EventDetailPage = () => {
                   Have a promo code?
                 </button>
 
-            
+                {/* Organizer Info */}
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <div className="text-sm text-gray-600 mb-2">Organisé par</div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                      <span className="text-purple-600 font-bold">JF</span>
+                      <span className="text-purple-600 font-bold">MY</span>
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">Jazz Festival Paris</div>
+                      <div className="font-semibold text-gray-900">MyTix Events</div>
                       <div className="text-xs text-gray-500">Organisateur vérifié ✓</div>
                     </div>
                   </div>
@@ -284,15 +347,17 @@ const EventDetailPage = () => {
           </div>
         </div>
 
-        
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Similar Events You Might Like</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {similarEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
+        {/* Similar Events */}
+        {similarEvents.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Événements similaires</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {similarEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <Footer />
