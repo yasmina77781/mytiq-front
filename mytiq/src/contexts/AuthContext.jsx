@@ -6,6 +6,7 @@ const AuthContext = createContext();
 // Configuration Axios
 const api = axios.create({
   baseURL: 'http://localhost:8000/api',
+  withCredentials: true, // ← IMPORTANT pour les cookies
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
     
     // TEMPORAIRE: Pour tester le dashboard admin
     // Décommente cette ligne pour tester en tant qu'admin
-    setUser({ id: 1, name: 'Admin Test', email: 'admin@mytix.com', role: 'admin' });
+    //setUser({ id: 1, name: 'Admin Test', email: 'admin@mytix.com', role: 'admin' });
     
     setLoading(false);
   }, []);
