@@ -7,12 +7,24 @@ const NewsletterPage = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Logique d'inscription newsletter (API Laravel)
-    console.log('Newsletter:', email);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  
+  try {
+    // Appel API Laravel
+    const response = await axios.post('http://localhost:8000/api/newsletter/subscribe', {
+      email: email
+    });
+    
     setSubscribed(true);
-  };
+    setLoading(false);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Erreur lors de l\'inscription');
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50">

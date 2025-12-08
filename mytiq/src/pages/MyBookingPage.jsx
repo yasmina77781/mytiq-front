@@ -75,22 +75,20 @@ const MyBookingsPage = () => {
   }, []);
 
   const fetchBookings = async () => {
-    try {
-      // Appel API Laravel
-      // const response = await api.get('/my-bookings');
-      // setBookings(response.data);
-      
-      // Pour l'instant, on utilise les données de démo
-      setTimeout(() => {
-        setBookings(demoBookings);
-        setLoading(false);
-      }, 500);
-    } catch (error) {
-      console.error('Erreur lors du chargement des réservations', error);
+  try {
+    // Appel API Laravel
+    const response = await api.get('/my-bookings');
+    setBookings(response.data);
+    setLoading(false);
+  } catch (error) {
+    console.error('Erreur lors du chargement des réservations', error);
+    // Si erreur, utiliser les données de démo
+    setTimeout(() => {
+      setBookings(demoBookings);
       setLoading(false);
-    }
-  };
-
+    }, 500);
+  }
+};
   const handleDownloadTicket = async (bookingId) => {
     try {
       // Appel API pour télécharger le PDF

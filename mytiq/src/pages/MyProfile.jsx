@@ -44,69 +44,63 @@ const ProfilePage = () => {
     setSuccess('');
   };
 
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+ const handleProfileSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  setSuccess('');
 
-    try {
-      // Appel API Laravel
-      // const response = await api.put('/user/profile', profileData);
-      
-      // Simulation
-      setTimeout(() => {
-        setSuccess('Profil mis à jour avec succès !');
-        setLoading(false);
-      }, 1000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de la mise à jour');
-      setLoading(false);
-    }
-  };
+  try {
+    // Appel API Laravel
+    const response = await api.put('/user/profile', profileData);
+    
+    setSuccess('Profil mis à jour avec succès !');
+    setLoading(false);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Erreur lors de la mise à jour');
+    setLoading(false);
+  }
+};
 
   const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setSuccess('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  setSuccess('');
 
-    // Validation
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError('Les nouveaux mots de passe ne correspondent pas');
-      setLoading(false);
-      return;
-    }
+  // Validation
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    setError('Les nouveaux mots de passe ne correspondent pas');
+    setLoading(false);
+    return;
+  }
 
-    if (passwordData.newPassword.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
-      setLoading(false);
-      return;
-    }
+  if (passwordData.newPassword.length < 8) {
+    setError('Le mot de passe doit contenir au moins 8 caractères');
+    setLoading(false);
+    return;
+  }
 
-    try {
-      // Appel API Laravel
-      // const response = await api.put('/user/password', {
-      //   current_password: passwordData.currentPassword,
-      //   new_password: passwordData.newPassword,
-      //   new_password_confirmation: passwordData.confirmPassword
-      // });
-      
-      // Simulation
-      setTimeout(() => {
-        setSuccess('Mot de passe modifié avec succès !');
-        setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        });
-        setLoading(false);
-      }, 1000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors du changement de mot de passe');
-      setLoading(false);
-    }
-  };
+  try {
+    // Appel API Laravel
+    const response = await api.put('/user/password', {
+      current_password: passwordData.currentPassword,
+      new_password: passwordData.newPassword,
+      new_password_confirmation: passwordData.confirmPassword
+    });
+    
+    setSuccess('Mot de passe modifié avec succès !');
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setLoading(false);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Erreur lors du changement de mot de passe');
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50">

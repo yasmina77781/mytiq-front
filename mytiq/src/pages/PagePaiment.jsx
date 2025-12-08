@@ -97,51 +97,44 @@ const CheckoutPage = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmitPayment = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const handleSubmitPayment = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    // Validation carte
-    const cardNumberClean = paymentData.cardNumber.replace(/\s/g, '');
-    if (cardNumberClean.length !== 16) {
-      setError('Numéro de carte invalide');
-      setLoading(false);
-      return;
-    }
+  // Validation carte
+  const cardNumberClean = paymentData.cardNumber.replace(/\s/g, '');
+  if (cardNumberClean.length !== 16) {
+    setError('Numéro de carte invalide');
+    setLoading(false);
+    return;
+  }
 
-    if (paymentData.cvv.length !== 3) {
-      setError('CVV invalide');
-      setLoading(false);
-      return;
-    }
+  if (paymentData.cvv.length !== 3) {
+    setError('CVV invalide');
+    setLoading(false);
+    return;
+  }
 
-    try {
-      // Appel API Laravel pour créer la réservation
-      // const response = await api.post('/bookings', {
-      //   event_id: event.id,
-      //   ticket_type: ticketType.name,
-      //   quantity: quantity,
-      //   total_price: total,
-      //   billing_data: billingData,
-      //   payment_data: {
-      //     ...paymentData,
-      //     cardNumber: cardNumberClean.substring(0, 4) + '****' + cardNumberClean.substring(12)
-      //   }
-      // });
+  try {
+    // Appel API Laravel pour créer la réservation
+    const response = await api.post('/tickets/purchase', {
+      event_id: event.id,
+      ticket_type: ticketType.name,
+      quantity: quantity,
+      total_price: total,
+      billing_data: billingData,
+    });
 
-      // Simulation du paiement
-      setTimeout(() => {
-        setStep(3);
-        setLoading(false);
-        window.scrollTo(0, 0);
-      }, 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors du paiement');
-      setLoading(false);
-    }
-  };
-
+    // Si succès, passer à l'étape 3
+    setStep(3);
+    setLoading(false);
+    window.scrollTo(0, 0);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Erreur lors du paiement');
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
